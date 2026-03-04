@@ -1,15 +1,13 @@
 export class ManagerEntity {
-  id: number;
+  id?: number;
   name: string;
   phone: string;
   nif: string;
-  user_id: number;
+  user_id?: number;
 
-  constructor(id: number, name: string, phone: string, nif: string, user_id: number) {
-    this.id = id;
+  constructor(name: string, phone: string, nif: string) {
     this.name = name;
     this.phone = phone;
     this.nif = nif;
-    this.user_id = user_id;
   }
 }
