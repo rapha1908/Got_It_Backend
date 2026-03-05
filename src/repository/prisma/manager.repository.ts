@@ -27,9 +27,10 @@ export class PrismaManagerRepository implements IManagerRepository {
       return undefined;
     }
 
+    const { user, ...managerData } = manager;
     const userWithManager = {
-      ...manager.user,
-      ...manager,
+      ...user,
+      ...managerData,
     };
 
     return userWithManager as unknown as UserEntity & IManager;

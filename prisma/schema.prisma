@@ -14,6 +14,7 @@ model User {
   password String
   type     String
   managers Manager[]
+  staffs   Staff[]
 
   @@map("users")
 }
@@ -25,6 +26,106 @@ model Manager {
   phone   String
   nif     String
   user    User   @relation(fields: [user_id], references: [id])
+  condos  Condominium[]
 
   @@map("managers")
+}
+
+model Condominium {
+  id         Int       @id @default(autoincrement())
+  name       String
+  address    String
+  city       String
+  state      String
+  zip        String
+  country    String
+  manager_id Int
+  manager    Manager   @relation(fields: [manager_id], references: [id])
+  services   Service[]
+
+  @@map("condominiums")
+}
+
+model Staff {
+  id       Int          @id @default(autoincrement())
+  user_id  Int
+  name     String
+  phone    String
+  nif      String
+  user     User         @relation(fields: [user_id], references: [id])
+  skills   StaffSkill[]
+  services Service[]
+
+  @@map("staff")
+}
+
+model Skill {
+  id     Int          @id @default(autoincrement())
+  name   String
+  staffs StaffSkill[]
+
+  @@map("skills")
+}
+
+model StaffSkill {
+  id       Int   @id @default(autoincrement())
+  staff_id Int
+  skill_id Int
+  staff    Staff @relation(fields: [staff_id], references: [id])
+  skill    Skill @relation(fields: [skill_id], references: [id])
+
+  @@unique([staff_id, skill_id])
+  @@map("staff_skills")
+}
+
+model Service {
+  id             String        @id
+  condominium_id Int
+  staff_id       Int
+  description    String
+  start_date     DateTime
+  end_date       DateTime
+  status         String
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @default(now())
+  price          Decimal
+  condominium    Condominium   @relation(fields: [condominium_id], references: [id])
+  staff          Staff         @relation(fields: [staff_id], references: [id])
+  photos         PhotoService[]
+  check_lists    CheckList[]
+
+  @@map("services")
+}
+
+model PhotoService {
+  id         Int      @id @default(autoincrement())
+  service_id String
+  photo_url  String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  service    Service  @relation(fields: [service_id], references: [id])
+
+  @@map("photo_services")
+}
+
+model CheckList {
+  id         Int             @id @default(autoincrement())
+  service_id String
+  description String
+  created_at DateTime        @default(now())
+  updated_at DateTime        @default(now())
+  service    Service         @relation(fields: [service_id], references: [id])
+  items      CheckListItem[]
+
+  @@map("check_lists")
+}
+
+model CheckListItem {
+  id            Int       @id @default(autoincrement())
+  check_list_id Int
+  description   String
+  completed     Boolean
+  check_list    CheckList @relation(fields: [check_list_id], references: [id])
+
+  @@map("check_list_items")
 }

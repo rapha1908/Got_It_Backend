@@ -1,8 +1,8 @@
 import { CreateUserUseCase } from "../../create-user";
-import { UserRepository } from "@/repository/pg/user.repository";
+import { PrismaUserRepository } from "@/repository/prisma/user.repository";
 
 export function makeCreateUserUseCase() {
-  const userRepository = new UserRepository();
+  const userRepository = new PrismaUserRepository();
   const createUserUseCase = new CreateUserUseCase(userRepository);
   return createUserUseCase;
 }
