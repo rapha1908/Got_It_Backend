@@ -15,4 +15,13 @@ export class UserRepository {
     const result = await client.query("SELECT * FROM users WHERE email = $1", [email]);
     return result.rows[0] || null;
   }
+
+  public async findByUserId(user_id: number): Promise<UserEntity | null> {
+    const client = await db.clientInstance;
+    const result = await client.query(
+      "SELECT * FROM users LEFT JOIN managers ON users.id = managers.user_id WHERE users.id = $1",
+      [user_id],
+    );
+    return result.rows[0] || null;
+  }
 }

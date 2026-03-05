@@ -1,30 +1,13 @@
 import { ManagerEntity } from "@/entities/manager.entity";
+import { db } from "@/lib/pg/db";
 
 export class ManagerRepository {
-  async create(manager: ManagerEntity): Promise<ManagerEntity> {
-    return manager;
-  }
-
-  async findAll(): Promise<ManagerEntity[]> {
-    return [];
-  }
-
-  async findById(id: number): Promise<ManagerEntity | null> {
-    return {
-      id,
-      name: "John Doe",
-      phone: "1234567890",
-      nif: "1234567890",
-      user_id: 1,
-    };
-  }
-
-  async update(manager: ManagerEntity): Promise<ManagerEntity> {
-    return manager;
-  }
-
-  async delete(id: number): Promise<void> {
-    await this.findById(id);
-    return;
+  async create({ name, phone, nif, user_id }: ManagerEntity): Promise<ManagerEntity> {
+    const client = await db.clientInstance;
+    const result = await client.query(
+      "INSERT INTO managers (name, phone, nif, user_id) VALUES ($1, $2, $3, $4) RETURNING *",
+      [name, phone, nif, user_id],
+    );
+    return result.rows[0];
   }
 }
