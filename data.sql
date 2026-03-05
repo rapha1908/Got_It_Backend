@@ -51,7 +51,7 @@ create table staff_skills (
 );
 
 create table services (
-    id serial primary key,
+    id uuid primary key,
     condominium_id int not null,
     staff_id int not null,
     description varchar(255) not null,
@@ -67,7 +67,7 @@ create table services (
 
 create table photo_services (
     id serial primary key,
-    service_id int not null,
+    service_id uuid not null,
     photo_url varchar(255) not null,
     created_at timestamp not null default now(),
     updated_at timestamp not null default now(),
@@ -76,7 +76,7 @@ create table photo_services (
 
 create table check_lists (
     id serial primary key,
-    service_id int not null,
+    service_id uuid not null,
     description varchar(255) not null,
     created_at timestamp not null default now(),
     updated_at timestamp not null default now(),
