@@ -10,12 +10,8 @@ export async function createUserController(req: Request, res: Response) {
     type: z.enum(["Manager", "Staff"]),
   });
 
-  try {
-    const { name, email, password, type } = registerBodySchema.parse(req.body);
-    const createUser = makeCreateUserUseCase();
-    const user = await createUser.handle(name, email, password, type);
-    res.status(201).json({ message: "User created successfully", data: user });
-  } catch (error) {
-    res.status(400).json({ message: "Invalid request body", error: error.message });
-  }
+  const { name, email, password, type } = registerBodySchema.parse(req.body);
+  const createUser = makeCreateUserUseCase();
+  const user = await createUser.handle(name, email, password, type);
+  res.status(201).json({ message: "User created successfully", data: user });
 }

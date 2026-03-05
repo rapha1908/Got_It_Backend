@@ -7,12 +7,8 @@ const paramsSchema = z.object({
 });
 
 export async function findUserController(req: Request, res: Response) {
-  try {
-    const { email } = paramsSchema.parse(req.params);
-    const findUser = makeFindUserUseCase();
-    const user = await findUser.handle(email);
-    res.status(200).json({ message: "User found successfully", data: user });
-  } catch (error) {
-    res.status(400).json({ message: "Invalid request params", error: error.message });
-  }
+  const { email } = paramsSchema.parse(req.params);
+  const findUser = makeFindUserUseCase();
+  const user = await findUser.handle(email);
+  res.status(200).json({ message: "User found successfully", data: user });
 }

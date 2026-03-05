@@ -10,12 +10,8 @@ export async function createManagerController(req: Request, res: Response) {
     nif: z.string().min(1),
     user_id: z.coerce.number(),
   });
-  try {
-    const { name, phone, nif, user_id } = registerBodySchema.parse(req.body);
-    const createManager = makeCreateManagerUseCase();
-    const createdManager = await createManager.handle(new ManagerEntity(name, phone, nif, user_id));
-    res.status(201).json({ message: "Manager created successfully", data: createdManager });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error", error: error.message });
-  }
+  const { name, phone, nif, user_id } = registerBodySchema.parse(req.body);
+  const createManager = makeCreateManagerUseCase();
+  const createdManager = await createManager.handle(new ManagerEntity(name, phone, nif, user_id));
+  res.status(201).json({ message: "Manager created successfully", data: createdManager });
 }
