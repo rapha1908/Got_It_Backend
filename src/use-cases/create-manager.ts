@@ -1,4 +1,4 @@
-import { ManagerRepository } from "@/repository/manager.respository";
+import { ManagerRepository } from "@/repository/pg/manager.respository";
 import { ManagerEntity } from "@/entities/manager.entity";
 
 export class CreateManagerUseCase {

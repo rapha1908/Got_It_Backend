@@ -1,4 +1,4 @@
-import { UserRepository } from "@/repository/user.repository";
+import { UserRepository } from "@/repository/pg/user.repository";
 import { FindWithManagerUseCase } from "@/use-cases/find-with-manager";
 
 export function makeFindManagerUseCase() {

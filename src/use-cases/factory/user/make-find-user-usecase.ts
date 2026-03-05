@@ -1,4 +1,4 @@
-import { UserRepository } from "@/repository/user.repository";
+import { UserRepository } from "@/repository/pg/user.repository";
 import { FindUserUseCase } from "@/use-cases/find-user";
 
 export function makeFindUserUseCase() {

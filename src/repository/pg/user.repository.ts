@@ -1,8 +1,9 @@
 import { UserEntity } from "@/entities/user.entity";
 import { db } from "@/lib/pg/db";
 import { ManagerEntity } from "@/entities/manager.entity";
+import { IUserRepository } from "../user.repository.interface";
 
-export class UserRepository {
+export class UserRepository implements IUserRepository {
   async create({ name, email, password, type }: UserEntity): Promise<UserEntity> {
     const client = await db.clientInstance;
     const result = await client.query(

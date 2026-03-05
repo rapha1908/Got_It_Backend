@@ -1,8 +1,8 @@
 import { UserEntity } from "@/entities/user.entity";
-import { UserRepository } from "@/repository/user.repository";
+import { IUserRepository } from "@/repository/user.repository.interface";
 
 export class CreateUserUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: IUserRepository) {}
   async handle(
     name: string,
     email: string,

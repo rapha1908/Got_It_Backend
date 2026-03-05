@@ -1,10 +1,10 @@
 import { UserEntity } from "@/entities/user.entity";
-import { UserRepository } from "@/repository/user.repository";
+import { IUserRepository } from "@/repository/user.repository.interface";
 import { ManagerEntity } from "@/entities/manager.entity";
 import { ResourceNotFoundError } from "./errors/resource-not-found-erro";
 
 export class FindWithManagerUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: IUserRepository) {}
 
   async handle(user_id: number): Promise<(UserEntity & ManagerEntity) | undefined> {
     const user = await this.userRepository.findByUserId(user_id);
