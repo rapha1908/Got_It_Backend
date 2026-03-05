@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { StaffSkillEntity } from "@/entities/staff-skill.entity";
+import { IStaffSkill } from "@/entities/models/staff-skill.interface";
 import { makeAddSkillToStaffUseCase } from "@/use-cases/factory/staff/make-add-skill-usecase";
 
 export async function addSkillToStaffController(req: Request, res: Response) {
@@ -16,7 +16,8 @@ export async function addSkillToStaffController(req: Request, res: Response) {
   const { skill_id } = bodySchema.parse(req.body);
 
   const addSkillToStaff = makeAddSkillToStaffUseCase();
-  const staffSkill = await addSkillToStaff.handle(new StaffSkillEntity(staff_id, skill_id));
+  const staffSkillPayload: IStaffSkill = { staff_id, skill_id };
+  const staffSkill = await addSkillToStaff.handle(staffSkillPayload);
 
   res.status(201).json({ message: "Skill added to staff successfully", data: staffSkill });
 }

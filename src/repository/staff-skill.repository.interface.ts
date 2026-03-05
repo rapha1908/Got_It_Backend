@@ -1,8 +1,8 @@
-import { SkillEntity } from "@/entities/skill.entity";
-import { StaffSkillEntity } from "@/entities/staff-skill.entity";
+import { ISkill } from "@/entities/models/skill.interface";
+import { IStaffSkill } from "@/entities/models/staff-skill.interface";
 
 export interface IStaffSkillRepository {
-  createSkill(skill: SkillEntity): Promise<SkillEntity>;
-  addSkillToStaff(staffSkill: StaffSkillEntity): Promise<StaffSkillEntity>;
-  findSkillsByStaffId(staff_id: number): Promise<SkillEntity[]>;
+  createSkill(skill: ISkill): Promise<ISkill>;
+  addSkillToStaff(staffSkill: IStaffSkill): Promise<IStaffSkill>;
+  findSkillsByStaffId(staff_id: number): Promise<ISkill[]>;
 }

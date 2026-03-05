@@ -1,4 +1,6 @@
-export class ManagerEntity {
+import { IManager } from "./models/manager.interface";
+
+export class ManagerEntity implements IManager {
   id?: number;
   name: string;
   phone: string;

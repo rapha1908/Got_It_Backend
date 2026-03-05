@@ -1,4 +1,6 @@
-export class StaffSkillEntity {
+import { IStaffSkill } from "./models/staff-skill.interface";
+
+export class StaffSkillEntity implements IStaffSkill {
   id?: number;
   staff_id: number;
   skill_id: number;

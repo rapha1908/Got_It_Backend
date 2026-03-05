@@ -1,4 +1,6 @@
-export class UserEntity {
+import { IUser } from "./models/user.interface";
+
+export class UserEntity implements IUser {
   id?: string;
   name: string;
   email: string;

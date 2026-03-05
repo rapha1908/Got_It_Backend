@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { StaffEntity } from "@/entities/staff.entity";
+import { IStaff } from "@/entities/models/staff.interface";
 import { makeCreateStaffUseCase } from "@/use-cases/factory/staff/make-create-usecase";
 
 export async function createStaffController(req: Request, res: Response) {
@@ -12,8 +12,9 @@ export async function createStaffController(req: Request, res: Response) {
   });
 
   const { name, phone, nif, user_id } = registerBodySchema.parse(req.body);
+  const staff: IStaff = { name, phone, nif, user_id };
   const createStaff = makeCreateStaffUseCase();
-  const createdStaff = await createStaff.handle(new StaffEntity(name, phone, nif, user_id));
+  const createdStaff = await createStaff.handle(staff);
 
   res.status(201).json({ message: "Staff created successfully", data: createdStaff });
 }

@@ -1,16 +1,16 @@
-import { SkillEntity } from "@/entities/skill.entity";
-import { StaffSkillEntity } from "@/entities/staff-skill.entity";
+import { ISkill } from "@/entities/models/skill.interface";
+import { IStaffSkill } from "@/entities/models/staff-skill.interface";
 import { db } from "@/lib/pg/db";
 import { IStaffSkillRepository } from "../staff-skill.repository.interface";
 
 export class StaffSkillRepository implements IStaffSkillRepository {
-  async createSkill(skill: SkillEntity): Promise<SkillEntity> {
+  async createSkill(skill: ISkill): Promise<ISkill> {
     const client = await db.clientInstance;
     const result = await client.query("INSERT INTO skills (name) VALUES ($1) RETURNING *", [skill.name]);
     return result.rows[0];
   }
 
-  async addSkillToStaff(staffSkill: StaffSkillEntity): Promise<StaffSkillEntity> {
+  async addSkillToStaff(staffSkill: IStaffSkill): Promise<IStaffSkill> {
     const client = await db.clientInstance;
     const result = await client.query(
       "INSERT INTO staff_skills (staff_id, skill_id) VALUES ($1, $2) RETURNING *",
@@ -19,7 +19,7 @@ export class StaffSkillRepository implements IStaffSkillRepository {
     return result.rows[0];
   }
 
-  async findSkillsByStaffId(staff_id: number): Promise<SkillEntity[]> {
+  async findSkillsByStaffId(staff_id: number): Promise<ISkill[]> {
     const client = await db.clientInstance;
     const result = await client.query(
       "SELECT skills.* FROM skills JOIN staff_skills ON skills.id = staff_skills.skill_id WHERE staff_skills.staff_id = $1",

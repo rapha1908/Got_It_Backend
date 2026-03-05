@@ -1,4 +1,6 @@
-export class StaffEntity {
+import { IStaff } from "./models/staff.interface";
+
+export class StaffEntity implements IStaff {
   id?: number;
   name: string;
   phone: string;

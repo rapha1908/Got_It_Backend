@@ -1,6 +1,6 @@
 import { UserEntity } from "@/entities/user.entity";
 import { db } from "@/lib/pg/db";
-import { ManagerEntity } from "@/entities/manager.entity";
+import { IManager } from "@/entities/models/manager.interface";
 import { IUserRepository } from "../user.repository.interface";
 
 export class UserRepository implements IUserRepository {
@@ -18,7 +18,7 @@ export class UserRepository implements IUserRepository {
     return result.rows[0] || null;
   }
 
-  public async findByUserId(user_id: number): Promise<(UserEntity & ManagerEntity) | undefined> {
+  public async findByUserId(user_id: number): Promise<(UserEntity & IManager) | undefined> {
     const client = await db.clientInstance;
     const result = await client.query(
       "SELECT * FROM users LEFT JOIN managers ON users.id = managers.user_id WHERE users.id = $1",
