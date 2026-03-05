@@ -10,4 +10,9 @@ export class UserRepository {
     );
     return result.rows[0];
   }
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    const client = await db.clientInstance;
+    const result = await client.query("SELECT * FROM users WHERE email = $1", [email]);
+    return result.rows[0] || null;
+  }
 }
