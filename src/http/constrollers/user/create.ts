@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { Request, Response } from "express";
-import { UserRepository } from "@/repository/user.repository";
-import { CreateUserUseCase } from "@/use-cases/create-user";
+import { makeCreateUserUseCase } from "@/use-cases/factory/user/make-create-user-usecase";
 
 export async function createUserController(req: Request, res: Response) {
   const registerBodySchema = z.object({
@@ -13,8 +12,7 @@ export async function createUserController(req: Request, res: Response) {
 
   try {
     const { name, email, password, type } = registerBodySchema.parse(req.body);
-    const userRepository = new UserRepository();
-    const createUser = new CreateUserUseCase(userRepository);
+    const createUser = makeCreateUserUseCase();
     const user = await createUser.handle(name, email, password, type);
     res.status(201).json({ message: "User created successfully", data: user });
   } catch (error) {

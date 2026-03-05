@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { Request, Response } from "express";
-import { UserRepository } from "@/repository/user.repository";
-import { FindUserUseCase } from "@/use-cases/find-user";
+import { makeFindUserUseCase } from "@/use-cases/factory/user/make-find-user-usecase";
 
 const paramsSchema = z.object({
   email: z.string().email(),
@@ -10,8 +9,7 @@ const paramsSchema = z.object({
 export async function findUserController(req: Request, res: Response) {
   try {
     const { email } = paramsSchema.parse(req.params);
-    const userRepository = new UserRepository();
-    const findUser = new FindUserUseCase(userRepository);
+    const findUser = makeFindUserUseCase();
     const user = await findUser.handle(email);
     res.status(200).json({ message: "User found successfully", data: user });
   } catch (error) {
