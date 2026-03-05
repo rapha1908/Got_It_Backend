@@ -4,7 +4,7 @@ import { ManagerEntity } from "@/entities/manager.entity";
 export class CreateManagerUseCase {
   constructor(private readonly managerRepository: ManagerRepository) {}
 
-  async create(manager: ManagerEntity): Promise<ManagerEntity> {
+  async handle(manager: ManagerEntity): Promise<ManagerEntity> {
     return this.managerRepository.create(manager);
   }
 }

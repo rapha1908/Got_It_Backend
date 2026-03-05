@@ -15,7 +15,7 @@ export async function createManagerController(req: Request, res: Response) {
   try {
     const managerRepository = new ManagerRepository();
     const createManagerUseCase = new CreateManagerUseCase(managerRepository);
-    const createdManager = await createManagerUseCase.create(new ManagerEntity(name, phone, nif));
+    const createdManager = await createManagerUseCase.handle(new ManagerEntity(name, phone, nif));
     res.status(201).json({ message: "Manager created successfully", data: createdManager });
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error: error.message });

@@ -1,9 +1,9 @@
 import express from "express";
+import { managerRoutes } from "./http/constrollers/manager/routes";
 
 export const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+app.use(express.json());
+managerRoutes(app);
 
 export default app;
