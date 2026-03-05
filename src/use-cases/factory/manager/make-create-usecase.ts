@@ -1,8 +1,8 @@
-import { ManagerRepository } from "@/repository/pg/manager.respository";
+import { PrismaManagerRepository } from "@/repository/prisma/manager.repository";
 import { CreateManagerUseCase } from "@/use-cases/create-manager";
 
 export function makeCreateManagerUseCase() {
-  const managerRepository = new ManagerRepository();
+  const managerRepository = new PrismaManagerRepository();
   const createManagerUseCase = new CreateManagerUseCase(managerRepository);
   return createManagerUseCase;
 }
