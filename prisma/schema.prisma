@@ -20,30 +20,40 @@ model User {
 }
 
 model Manager {
-  id      Int    @id @default(autoincrement())
-  user_id Int
-  name    String
-  phone   String
-  nif     String
-  user    User   @relation(fields: [user_id], references: [id])
-  condos  Condominium[]
+  id           Int                  @id @default(autoincrement())
+  user_id      Int
+  name         String
+  phone        String
+  nif          String
+  user         User                 @relation(fields: [user_id], references: [id])
+  condominiums CondominiumManager[]
 
   @@map("managers")
 }
 
 model Condominium {
-  id         Int       @id @default(autoincrement())
-  name       String
-  address    String
-  city       String
-  state      String
-  zip        String
-  country    String
-  manager_id Int
-  manager    Manager   @relation(fields: [manager_id], references: [id])
-  services   Service[]
+  id       Int                  @id @default(autoincrement())
+  name     String
+  address  String
+  city     String
+  state    String
+  zip      String
+  country  String
+  managers CondominiumManager[]
+  services Service[]
 
   @@map("condominiums")
+}
+
+model CondominiumManager {
+  id             Int         @id @default(autoincrement())
+  condominium_id Int
+  manager_id     Int
+  condominium    Condominium @relation(fields: [condominium_id], references: [id])
+  manager        Manager     @relation(fields: [manager_id], references: [id])
+
+  @@unique([condominium_id, manager_id])
+  @@map("condominium_managers")
 }
 
 model Staff {

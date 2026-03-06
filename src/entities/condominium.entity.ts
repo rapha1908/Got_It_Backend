@@ -8,7 +8,7 @@ export class CondominiumEntity implements ICondominium {
   state: string;
   zip: string;
   country: string;
-  manager_id: number;
+  manager_ids: number[];
 
   constructor(
     name: string,
@@ -17,7 +17,7 @@ export class CondominiumEntity implements ICondominium {
     state: string,
     zip: string,
     country: string,
-    manager_id: number,
+    manager_ids: number[],
   ) {
     this.name = name;
     this.address = address;
@@ -25,6 +25,6 @@ export class CondominiumEntity implements ICondominium {
     this.state = state;
     this.zip = zip;
     this.country = country;
-    this.manager_id = manager_id;
+    this.manager_ids = manager_ids;
   }
 }

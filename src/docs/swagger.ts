@@ -96,7 +96,7 @@ const swaggerDefinition = {
       },
       CreateCondominiumBody: {
         type: "object",
-        required: ["name", "address", "city", "state", "zip", "country", "manager_id"],
+        required: ["name", "address", "city", "state", "zip", "country", "manager_ids"],
         properties: {
           name: { type: "string" },
           address: { type: "string" },
@@ -104,7 +104,11 @@ const swaggerDefinition = {
           state: { type: "string" },
           zip: { type: "string" },
           country: { type: "string" },
-          manager_id: { type: "integer" },
+          manager_ids: {
+            type: "array",
+            minItems: 1,
+            items: { type: "integer" },
+          },
         },
       },
       CreateServiceBody: {

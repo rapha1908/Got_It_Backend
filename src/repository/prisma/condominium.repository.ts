@@ -12,10 +12,30 @@ export class PrismaCondominiumRepository implements ICondominiumRepository {
         state: condominium.state,
         zip: condominium.zip,
         country: condominium.country,
-        manager_id: condominium.manager_id,
+        managers: {
+          create: condominium.manager_ids.map((managerId) => ({
+            manager_id: managerId,
+          })),
+        },
+      },
+      include: {
+        managers: {
+          select: {
+            manager_id: true,
+          },
+        },
       },
     });
 
-    return createdCondominium;
+    return {
+      id: createdCondominium.id,
+      name: createdCondominium.name,
+      address: createdCondominium.address,
+      city: createdCondominium.city,
+      state: createdCondominium.state,
+      zip: createdCondominium.zip,
+      country: createdCondominium.country,
+      manager_ids: createdCondominium.managers.map((manager) => manager.manager_id),
+    };
   }
 }

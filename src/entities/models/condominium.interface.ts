@@ -6,5 +6,5 @@ export interface ICondominium {
   state: string;
   zip: string;
   country: string;
-  manager_id: number;
+  manager_ids: number[];
 }

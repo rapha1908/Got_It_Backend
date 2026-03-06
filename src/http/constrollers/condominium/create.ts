@@ -11,12 +11,15 @@ export async function createCondominiumController(req: Request, res: Response) {
     state: z.string().min(1),
     zip: z.string().min(1),
     country: z.string().min(1),
-    manager_id: z.coerce.number(),
+    manager_ids: z
+      .array(z.coerce.number())
+      .min(1)
+      .transform((managerIds) => [...new Set(managerIds)]),
   });
 
-  const { name, address, city, state, zip, country, manager_id } = registerBodySchema.parse(req.body);
+  const { name, address, city, state, zip, country, manager_ids } = registerBodySchema.parse(req.body);
 
-  const condominium: ICondominium = { name, address, city, state, zip, country, manager_id };
+  const condominium: ICondominium = { name, address, city, state, zip, country, manager_ids };
   const createCondominium = makeCreateCondominiumUseCase();
   const createdCondominium = await createCondominium.handle(condominium);
   res.status(201).json({ message: "Condominium created successfully", data: createdCondominium });

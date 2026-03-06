@@ -277,7 +277,7 @@ Body:
   "state": "Luanda",
   "zip": "1000-000",
   "country": "Angola",
-  "manager_id": 1
+  "manager_ids": [1, 2]
 }
 ```
 
@@ -294,7 +294,7 @@ Resposta `201`:
     "state": "Luanda",
     "zip": "1000-000",
     "country": "Angola",
-    "manager_id": 1
+    "manager_ids": [1, 2]
   }
 }
 ```
@@ -453,7 +453,7 @@ API Got-It
 
   Condominios
     POST /condominiums
-      body: name, address, city, state, zip, country, manager_id
+      body: name, address, city, state, zip, country, manager_ids[]
       retorno: Condominio criado
 
   Servicos
