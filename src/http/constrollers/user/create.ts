@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { Request, Response } from "express";
 import { makeCreateUserUseCase } from "@/use-cases/factory/user/make-create-user-usecase";
+import { hash } from "bcryptjs";
 
 export async function createUserController(req: Request, res: Response) {
   const registerBodySchema = z.object({
@@ -11,7 +12,16 @@ export async function createUserController(req: Request, res: Response) {
   });
 
   const { name, email, password, type } = registerBodySchema.parse(req.body);
+  const hashedPassword = await hash(password, 10);
   const createUser = makeCreateUserUseCase();
-  const user = await createUser.handle(name, email, password, type);
-  res.status(201).json({ message: "User created successfully", data: user });
+  const user = await createUser.handle(name, email, hashedPassword, type);
+  res.status(201).json({
+    message: "User created successfully",
+    data: {
+      id: user?.id,
+      name: user?.name,
+      email: user?.email,
+      type: user?.type,
+    },
+  });
 }

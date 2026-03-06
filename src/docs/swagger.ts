@@ -14,6 +14,7 @@ const swaggerDefinition = {
     },
   ],
   tags: [
+    { name: "Auth" },
     { name: "Users" },
     { name: "Managers" },
     { name: "Staff" },
@@ -23,6 +24,13 @@ const swaggerDefinition = {
     { name: "CheckLists" },
   ],
   components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
+    },
     schemas: {
       ApiSuccess: {
         type: "object",
@@ -58,6 +66,14 @@ const swaggerDefinition = {
           email: { type: "string", format: "email" },
           password: { type: "string", minLength: 8 },
           type: { type: "string", enum: ["Manager", "Staff"] },
+        },
+      },
+      LoginBody: {
+        type: "object",
+        required: ["email", "password"],
+        properties: {
+          email: { type: "string", format: "email" },
+          password: { type: "string", minLength: 8 },
         },
       },
       CreateManagerBody: {
@@ -150,6 +166,71 @@ const swaggerDefinition = {
     },
   },
   paths: {
+    "/auth/login": {
+      post: {
+        tags: ["Auth"],
+        summary: "Autenticar usuario e gerar token JWT",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/LoginBody" },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Login realizado com sucesso",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiSuccess" },
+              },
+            },
+          },
+          "401": {
+            description: "Credenciais invalidas",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error400" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/auth/me": {
+      get: {
+        tags: ["Auth"],
+        summary: "Retornar dados do usuario autenticado",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          "200": {
+            description: "Usuario autenticado retornado com sucesso",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiSuccess" },
+              },
+            },
+          },
+          "401": {
+            description: "Token invalido, expirado ou ausente",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error400" },
+              },
+            },
+          },
+          "404": {
+            description: "Usuario nao encontrado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Error404" },
+              },
+            },
+          },
+        },
+      },
+    },
     "/users": {
       post: {
         tags: ["Users"],

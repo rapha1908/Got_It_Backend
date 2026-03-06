@@ -9,6 +9,8 @@ const envSchema = z.object({
   POSTGRES_PORT: z.coerce.number().default(5432),
   POSTGRES_DB: z.string(),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
+  JWT_SECRET: z.string(),
+  DATABASE_URL: z.string(),
 });
 
 const _env = envSchema.safeParse(process.env);
