@@ -6,6 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down -v",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write ."
