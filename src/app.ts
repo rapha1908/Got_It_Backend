@@ -8,6 +8,7 @@ import { serviceRoutes } from "./http/constrollers/service/routes";
 import { authRoutes } from "./http/constrollers/auth/routes";
 import { globalErrorHandler } from "./utils/global-error-handler";
 import { swaggerSpec } from "./docs/swagger";
+import { ensureAuth } from "./http/middlewares/ensure-auth";
 export const app = express();
 
 
@@ -16,6 +17,9 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get("/docs.json", (_req: Request, res: Response) => {
   return res.status(200).json(swaggerSpec);
 });
+
+app.use(ensureAuth);
+
 authRoutes(app);
 managerRoutes(app);
 userRoutes(app);
