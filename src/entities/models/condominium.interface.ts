@@ -8,3 +8,7 @@ export interface ICondominium {
   country: string;
   manager_ids: number[];
 }
+
+export interface ICondominiumOfManager extends ICondominium {
+  manager_id: number;
+}

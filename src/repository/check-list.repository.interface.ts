@@ -3,4 +3,5 @@ import { ICheckList, ICheckListWithItems } from "@/entities/models/check-list.in
 export interface ICheckListRepository {
   create(checkList: ICheckList): Promise<ICheckList>;
   findByServiceId(service_id: string): Promise<ICheckListWithItems[]>;
+  findByServiceIds(service_ids: string[]): Promise<ICheckListWithItems[]>;
 }

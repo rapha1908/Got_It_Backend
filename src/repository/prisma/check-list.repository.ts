@@ -22,4 +22,11 @@ export class PrismaCheckListRepository implements ICheckListRepository {
 
     return checkLists;
   }
+
+  async findByServiceIds(service_ids: string[]): Promise<ICheckListWithItems[]> {
+    return prisma.checkList.findMany({
+      where: { service_id: { in: service_ids } },
+      include: { items: true },
+    });
+  }
 }

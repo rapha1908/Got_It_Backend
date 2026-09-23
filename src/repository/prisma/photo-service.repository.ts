@@ -19,4 +19,10 @@ export class PrismaPhotoServiceRepository implements IPhotoServiceRepository {
       where: { service_id },
     });
   }
+
+  async findByServiceIds(service_ids: string[]): Promise<IPhotoService[]> {
+    return prisma.photoService.findMany({
+      where: { service_id: { in: service_ids } },
+    });
+  }
 }

@@ -1,6 +1,30 @@
-import { ICondominium } from "@/entities/models/condominium.interface";
+import { Prisma } from "@prisma/client";
+import { ICondominium, ICondominiumOfManager } from "@/entities/models/condominium.interface";
 import { prisma } from "@/lib/prisma/db";
 import { ICondominiumRepository } from "../condominium.repository.interface";
+
+const withManagerIds = {
+  managers: {
+    select: {
+      manager_id: true,
+    },
+  },
+} satisfies Prisma.CondominiumInclude;
+
+type CondominiumRow = Prisma.CondominiumGetPayload<{ include: typeof withManagerIds }>;
+
+function toCondominium(condominium: CondominiumRow): ICondominium {
+  return {
+    id: condominium.id,
+    name: condominium.name,
+    address: condominium.address,
+    city: condominium.city,
+    state: condominium.state,
+    zip: condominium.zip,
+    country: condominium.country,
+    manager_ids: condominium.managers.map((manager) => manager.manager_id),
+  };
+}
 
 export class PrismaCondominiumRepository implements ICondominiumRepository {
   async create(condominium: ICondominium): Promise<ICondominium> {
@@ -18,47 +42,39 @@ export class PrismaCondominiumRepository implements ICondominiumRepository {
           })),
         },
       },
-      include: {
-        managers: {
-          select: {
-            manager_id: true,
-          },
-        },
-      },
+      include: withManagerIds,
     });
 
-    return {
-      id: createdCondominium.id,
-      name: createdCondominium.name,
-      address: createdCondominium.address,
-      city: createdCondominium.city,
-      state: createdCondominium.state,
-      zip: createdCondominium.zip,
-      country: createdCondominium.country,
-      manager_ids: createdCondominium.managers.map((manager) => manager.manager_id),
-    };
+    return toCondominium(createdCondominium);
   }
 
   async findAll(): Promise<ICondominium[]> {
+    const condominiums = await prisma.condominium.findMany({ include: withManagerIds });
+    return condominiums.map(toCondominium);
+  }
+
+  async findById(id: number): Promise<ICondominium | null> {
+    const condominium = await prisma.condominium.findUnique({ where: { id }, include: withManagerIds });
+    return condominium ? toCondominium(condominium) : null;
+  }
+
+  async findByIds(ids: number[]): Promise<ICondominium[]> {
     const condominiums = await prisma.condominium.findMany({
-      include: {
-        managers: {
-          select: {
-            manager_id: true,
-          },
-        },
-      },
+      where: { id: { in: ids } },
+      include: withManagerIds,
+    });
+    return condominiums.map(toCondominium);
+  }
+
+  async findByManagerIds(manager_ids: number[]): Promise<ICondominiumOfManager[]> {
+    const relations = await prisma.condominiumManager.findMany({
+      where: { manager_id: { in: manager_ids } },
+      include: { condominium: { include: withManagerIds } },
     });
 
-    return condominiums.map((condominium) => ({
-      id: condominium.id,
-      name: condominium.name,
-      address: condominium.address,
-      city: condominium.city,
-      state: condominium.state,
-      zip: condominium.zip,
-      country: condominium.country,
-      manager_ids: condominium.managers.map((manager) => manager.manager_id),
+    return relations.map((relation) => ({
+      ...toCondominium(relation.condominium),
+      manager_id: relation.manager_id,
     }));
   }
 }
