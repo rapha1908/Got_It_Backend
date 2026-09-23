@@ -30,4 +30,21 @@ export class PrismaServiceRepository implements IServiceRepository {
       price: Number(createdService.price),
     };
   }
+
+  async findByCondominiumId(condominium_id: number): Promise<IService[]> {
+    const services = await prisma.service.findMany({
+      where: { condominium_id },
+    });
+
+    return services.map((service) => ({
+      id: service.id,
+      condominium_id: service.condominium_id,
+      staff_id: service.staff_id,
+      description: service.description,
+      start_date: service.start_date.toISOString().slice(0, 10),
+      end_date: service.end_date.toISOString().slice(0, 10),
+      status: service.status,
+      price: Number(service.price),
+    }));
+  }
 }

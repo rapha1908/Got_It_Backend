@@ -38,4 +38,27 @@ export class PrismaCondominiumRepository implements ICondominiumRepository {
       manager_ids: createdCondominium.managers.map((manager) => manager.manager_id),
     };
   }
+
+  async findAll(): Promise<ICondominium[]> {
+    const condominiums = await prisma.condominium.findMany({
+      include: {
+        managers: {
+          select: {
+            manager_id: true,
+          },
+        },
+      },
+    });
+
+    return condominiums.map((condominium) => ({
+      id: condominium.id,
+      name: condominium.name,
+      address: condominium.address,
+      city: condominium.city,
+      state: condominium.state,
+      zip: condominium.zip,
+      country: condominium.country,
+      manager_ids: condominium.managers.map((manager) => manager.manager_id),
+    }));
+  }
 }
