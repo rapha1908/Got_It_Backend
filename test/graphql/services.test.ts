@@ -1,10 +1,13 @@
 import { randomUUID } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PrismaCheckListRepository } from "@/repository/prisma/check-list.repository";
+import { PrismaCondominiumRepository } from "@/repository/prisma/condominium.repository";
 import { PrismaManagerRepository } from "@/repository/prisma/manager.repository";
 import { PrismaPhotoServiceRepository } from "@/repository/prisma/photo-service.repository";
 import { PrismaServiceRepository } from "@/repository/prisma/service.repository";
+import { PrismaStaffSkillRepository } from "@/repository/prisma/staff-skill.repository";
 import { PrismaStaffRepository } from "@/repository/prisma/staff.repository";
+import { PrismaUserRepository } from "@/repository/prisma/user.repository";
 import * as seed from "../helpers/factories";
 import { execute, tokenFor } from "../helpers/graphql";
 import { resetDb } from "../helpers/reset-db";
@@ -96,6 +99,53 @@ describe("condominiums and services", () => {
 
     expect(result.errors).toBeUndefined();
     for (const spy of spies) {
+      expect(spy).toHaveBeenCalledTimes(1);
+    }
+  });
+
+  it("batches the user, manager, staff and skill relations too (no N+1)", async () => {
+    const { staff } = await seedTree();
+    const [plumbing, painting] = [await seed.seedSkill("Plumbing"), await seed.seedSkill("Painting")];
+    await seed.seedStaffSkill(staff[0].id, plumbing.id);
+    await seed.seedStaffSkill(staff[1].id, painting.id);
+
+    const spies = {
+      userByIds: vi.spyOn(PrismaUserRepository.prototype, "findByIds"),
+      managerByUserIds: vi.spyOn(PrismaManagerRepository.prototype, "findByUserIds"),
+      staffByUserIds: vi.spyOn(PrismaStaffRepository.prototype, "findByUserIds"),
+      condominiumsByManagerIds: vi.spyOn(PrismaCondominiumRepository.prototype, "findByManagerIds"),
+      condominiumByIds: vi.spyOn(PrismaCondominiumRepository.prototype, "findByIds"),
+      skillsByStaffIds: vi.spyOn(PrismaStaffSkillRepository.prototype, "findSkillsByStaffIds"),
+      servicesByStaffIds: vi.spyOn(PrismaServiceRepository.prototype, "findByStaffIds"),
+    };
+
+    const result = await execute(
+      `{
+        condominiums {
+          managers { user { manager { id } staff { id } } condominiums { id } }
+          services { condominium { id } staff { user { id } skills { name } services { id } } }
+        }
+      }`,
+      {},
+      token,
+    );
+
+    expect(result.errors).toBeUndefined();
+    const staffSkills = result.data?.condominiums.flatMap((c: { services: { staff: { skills: { name: string }[] } }[] }) =>
+      c.services.flatMap((s) => s.staff.skills.map((k) => k.name)),
+    );
+    expect(new Set(staffSkills)).toEqual(new Set(["Plumbing", "Painting"]));
+
+    // Manager.user and Staff.user are two fields, so two batched loaders share findByIds.
+    expect(spies.userByIds).toHaveBeenCalledTimes(2);
+    for (const spy of [
+      spies.managerByUserIds,
+      spies.staffByUserIds,
+      spies.condominiumsByManagerIds,
+      spies.condominiumByIds,
+      spies.skillsByStaffIds,
+      spies.servicesByStaffIds,
+    ]) {
       expect(spy).toHaveBeenCalledTimes(1);
     }
   });
