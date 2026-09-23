@@ -14,15 +14,6 @@ export class PrismaCheckListRepository implements ICheckListRepository {
     return createdCheckList;
   }
 
-  async findByServiceId(service_id: string): Promise<ICheckListWithItems[]> {
-    const checkLists = await prisma.checkList.findMany({
-      where: { service_id },
-      include: { items: true },
-    });
-
-    return checkLists;
-  }
-
   async findByServiceIds(service_ids: string[]): Promise<ICheckListWithItems[]> {
     return prisma.checkList.findMany({
       where: { service_id: { in: service_ids } },

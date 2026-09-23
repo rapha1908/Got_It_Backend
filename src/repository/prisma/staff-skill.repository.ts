@@ -25,15 +25,6 @@ export class PrismaStaffSkillRepository implements IStaffSkillRepository {
     return createdStaffSkill;
   }
 
-  async findSkillsByStaffId(staff_id: number): Promise<ISkill[]> {
-    const relations = await prisma.staffSkill.findMany({
-      where: { staff_id },
-      include: { skill: true },
-    });
-
-    return relations.map((relation) => relation.skill);
-  }
-
   async findSkillsByStaffIds(staff_ids: number[]): Promise<ISkillOfStaff[]> {
     const relations = await prisma.staffSkill.findMany({
       where: { staff_id: { in: staff_ids } },

@@ -38,8 +38,9 @@ src/
   server.ts            # await server.start() antes do listen
   graphql/
     builder.ts         # SchemaBuilder, plugins, tipos Context e AuthScopes
-    context.ts         # lê Authorization → { userId: number | null, loaders }
-    loaders.ts         # cria os DataLoaders por request
+    context.ts         # lê Authorization → { userId: number | null }
+    refs.ts            # objectRefs compartilhados (evita import circular)
+    utils/order-by-keys.ts
     errors.ts          # formatError (mapeamento de erros)
     server.ts          # instancia ApolloServer (schema, formatError, validationRules, introspection)
     schema.ts          # importa modules/* e exporta builder.toSchema()
@@ -59,10 +60,11 @@ src/
 - `src/utils/global-error-handler.ts` (substituído por `src/graphql/errors.ts`)
 - `src/use-cases/find-staff-skills.ts` e sua factory (substituído pelo campo `Staff.skills`)
 - `docs/api-miro.md` é reescrito como `docs/api-graphql.md`, com exemplos de queries e mutations
+- `find-services-by-condominium`, `find-photos-by-service`, `find-check-lists-by-service` e suas factories, além dos métodos de repositório que só eles usavam (`findByCondominiumId`, `findByServiceId`, `findSkillsByStaffId`, `findByUserId`). Tudo isso foi substituído pelos campos aninhados.
 
 ### Mantido
 
-`entities/`, `repository/` (com métodos novos), `use-cases/` (com use cases novos), `lib/`, `env/`, Prisma e migrations.
+`entities/`, `repository/` (com métodos novos), `use-cases/` (com use cases novos), `lib/`, `env/`, Prisma e migrations. Novos: `AuthenticateUseCase`, `FindStaffByIdUseCase` e `src/lib/jwt.ts`.
 
 ## Autenticação
 
@@ -133,14 +135,13 @@ O hash bcrypt da senha em `createUser` e a verificação em `login` continuam ig
 
 ## DataLoaders
 
-`loaders.ts` cria novas instâncias por request, no `context`. Os loaders chamam os repositórios diretamente, porque carregamento em lote é preocupação de acesso a dados. Queries e mutations continuam passando por use cases.
+O `@pothos/plugin-dataloader` cria os loaders por request automaticamente, a partir do objeto de context. Cada campo relacional usa `t.loadable` / `t.loadableGroup`, que chamam os repositórios diretamente, porque carregamento em lote é preocupação de acesso a dados. Queries e mutations continuam passando por use cases.
 
 | Loader | Chave → valor | Método de repositório (novo) |
 |---|---|---|
 | `userById` | `userId → User` | `IUserRepository.findByIds(ids)` |
 | `managerByUserId` | `userId → Manager \| null` | `IManagerRepository.findByUserIds(ids)` |
 | `staffByUserId` | `userId → Staff \| null` | `IStaffRepository.findByUserIds(ids)` |
-| `managersByCondominiumId` | `condominiumId → Manager[]` | `IManagerRepository.findByCondominiumIds(ids)` |
 | `staffById` | `staffId → Staff` | `IStaffRepository.findByIds(ids)` |
 | `skillsByStaffId` | `staffId → Skill[]` | `IStaffSkillRepository.findSkillsByStaffIds(ids)` |
 | `condominiumById` | `id → Condominium` | `ICondominiumRepository.findByIds(ids)` |
@@ -149,6 +150,8 @@ O hash bcrypt da senha em `createUser` e a verificação em `login` continuam ig
 | `servicesByStaffId` | `staffId → Service[]` | `IServiceRepository.findByStaffIds(ids)` |
 | `photosByServiceId` | `serviceId → PhotoService[]` | `IPhotoServiceRepository.findByServiceIds(ids)` |
 | `checkListsByServiceId` | `serviceId → CheckList[]` (com `items`) | `ICheckListRepository.findByServiceIds(ids)` |
+
+`Condominium.managers` usa `manager_ids`, que o repositório já retorna, com `IManagerRepository.findByIds`.
 
 Métodos de busca individual também novos: `ICondominiumRepository.findById`, `IServiceRepository.findById` e `IUserRepository.findById` (este último pode reaproveitar `findByUserId` sem a mescla com manager).
 

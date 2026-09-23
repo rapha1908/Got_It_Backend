@@ -4,6 +4,5 @@ import { ISkillOfStaff, IStaffSkill } from "@/entities/models/staff-skill.interf
 export interface IStaffSkillRepository {
   createSkill(skill: ISkill): Promise<ISkill>;
   addSkillToStaff(staffSkill: IStaffSkill): Promise<IStaffSkill>;
-  findSkillsByStaffId(staff_id: number): Promise<ISkill[]>;
   findSkillsByStaffIds(staff_ids: number[]): Promise<ISkillOfStaff[]>;
 }

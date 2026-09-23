@@ -38,4 +38,11 @@ describe("HTTP /graphql", () => {
     const authenticated = await post({ query: "{ me { name } }" }, { authorization: `Bearer ${tokenFor(user)}` });
     expect(authenticated.body).toEqual({ data: { me: { name: "Ana" } } });
   });
+
+  it("no longer serves the REST API or Swagger", async () => {
+    for (const path of ["/condominiums", "/docs", "/docs.json", "/auth/me"]) {
+      const response = await fetch(`${url}${path}`);
+      expect(response.status, path).toBe(404);
+    }
+  });
 });

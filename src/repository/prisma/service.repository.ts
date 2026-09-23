@@ -35,11 +35,6 @@ export class PrismaServiceRepository implements IServiceRepository {
     return toService(createdService);
   }
 
-  async findByCondominiumId(condominium_id: number): Promise<IService[]> {
-    const services = await prisma.service.findMany({ where: { condominium_id } });
-    return services.map(toService);
-  }
-
   async findById(id: string): Promise<IService | null> {
     const service = await prisma.service.findUnique({ where: { id } });
     return service ? toService(service) : null;
