@@ -1,8 +1,8 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "GraphQL API for managing condominium maintenance services: managers, staff, skills, services, photos and checklists.",
+  "main": "src/server.ts",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
