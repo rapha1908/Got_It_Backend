@@ -1,5 +1,4 @@
 import { IManager } from "@/entities/models/manager.interface";
-import { UserEntity } from "@/entities/user.entity";
 import { prisma } from "@/lib/prisma/db";
 import { IManagerRepository } from "../manager.repository.interface";
 
@@ -17,22 +16,16 @@ export class PrismaManagerRepository implements IManagerRepository {
     return createdManager;
   }
 
-  async findWithManager(user_id: number): Promise<(UserEntity & IManager) | undefined> {
-    const manager = await prisma.manager.findFirst({
-      where: { user_id },
-      include: { user: true },
-    });
+  async findWithManager(user_id: number): Promise<IManager | undefined> {
+    const manager = await prisma.manager.findFirst({ where: { user_id } });
+    return manager ?? undefined;
+  }
 
-    if (!manager) {
-      return undefined;
-    }
+  async findByIds(ids: number[]): Promise<IManager[]> {
+    return prisma.manager.findMany({ where: { id: { in: ids } } });
+  }
 
-    const { user, ...managerData } = manager;
-    const userWithManager = {
-      ...user,
-      ...managerData,
-    };
-
-    return userWithManager as unknown as UserEntity & IManager;
+  async findByUserIds(user_ids: number[]): Promise<IManager[]> {
+    return prisma.manager.findMany({ where: { user_id: { in: user_ids } } });
   }
 }

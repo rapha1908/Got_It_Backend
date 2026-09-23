@@ -1,5 +1,5 @@
 import { ISkill } from "@/entities/models/skill.interface";
-import { IStaffSkill } from "@/entities/models/staff-skill.interface";
+import { ISkillOfStaff, IStaffSkill } from "@/entities/models/staff-skill.interface";
 import { prisma } from "@/lib/prisma/db";
 import { IStaffSkillRepository } from "../staff-skill.repository.interface";
 
@@ -32,5 +32,14 @@ export class PrismaStaffSkillRepository implements IStaffSkillRepository {
     });
 
     return relations.map((relation) => relation.skill);
+  }
+
+  async findSkillsByStaffIds(staff_ids: number[]): Promise<ISkillOfStaff[]> {
+    const relations = await prisma.staffSkill.findMany({
+      where: { staff_id: { in: staff_ids } },
+      include: { skill: true },
+    });
+
+    return relations.map((relation) => ({ ...relation.skill, staff_id: relation.staff_id }));
   }
 }

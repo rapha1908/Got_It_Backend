@@ -1,5 +1,4 @@
 import { IStaff } from "@/entities/models/staff.interface";
-import { UserEntity } from "@/entities/user.entity";
 import { prisma } from "@/lib/prisma/db";
 import { IStaffRepository } from "../staff.repository.interface";
 
@@ -17,22 +16,20 @@ export class PrismaStaffRepository implements IStaffRepository {
     return createdStaff;
   }
 
-  async findWithStaff(user_id: number): Promise<(UserEntity & IStaff) | undefined> {
-    const staff = await prisma.staff.findFirst({
-      where: { user_id },
-      include: { user: true },
-    });
+  async findWithStaff(user_id: number): Promise<IStaff | undefined> {
+    const staff = await prisma.staff.findFirst({ where: { user_id } });
+    return staff ?? undefined;
+  }
 
-    if (!staff) {
-      return undefined;
-    }
+  async findById(id: number): Promise<IStaff | null> {
+    return prisma.staff.findUnique({ where: { id } });
+  }
 
-    const { user, ...staffData } = staff;
-    const userWithStaff = {
-      ...user,
-      ...staffData,
-    };
+  async findByIds(ids: number[]): Promise<IStaff[]> {
+    return prisma.staff.findMany({ where: { id: { in: ids } } });
+  }
 
-    return userWithStaff as unknown as UserEntity & IStaff;
+  async findByUserIds(user_ids: number[]): Promise<IStaff[]> {
+    return prisma.staff.findMany({ where: { user_id: { in: user_ids } } });
   }
 }
