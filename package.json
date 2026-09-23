@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:test:up": "docker compose --profile test up -d --wait postgres-test",
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
     "db:migrate:deploy": "prisma migrate deploy",
@@ -28,7 +30,9 @@
     "prettier": "3.8.1",
     "tsx": "^4.21.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.56.1"
+    "typescript-eslint": "8.56.1",
+    "vite": "8.3.0",
+    "vitest": "5.0.1"
   },
   "dependencies": {
     "@prisma/client": "6.19.2",

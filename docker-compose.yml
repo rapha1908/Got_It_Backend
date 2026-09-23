@@ -31,5 +31,23 @@ services:
       retries: 10
     restart: unless-stopped
 
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: got-it-postgres-test
+    profiles: ["test"]
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: gotit_test
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d gotit_test"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
 volumes:
   pg_data:
